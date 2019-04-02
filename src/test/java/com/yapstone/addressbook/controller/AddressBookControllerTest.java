@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yapstone.addressbook.model.Address;
 import com.yapstone.addressbook.model.AddressBook;
 import com.yapstone.addressbook.service.AddressBookService;
 
@@ -41,19 +42,29 @@ public class AddressBookControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
-	List<AddressBook> addressBooks;
+	private List<AddressBook> addressBooks;
 	
-	AddressBook addressBook;
+	private AddressBook addressBook;
+	
+	private Address address;
 	
 	@Before
 	public void setup() {
 		this.mockMvc = webAppContextSetup(webApplicationContext).build();
 		addressBook = new AddressBook();
-		addressBook.setAddressId(1234L);
+		address = new Address();
+		
+		address.setAddressId(1L);
+		address.setAddressLine1("Wall Street");
+		address.setAddressLine2("New Avenue");
+		address.setCity("Dublin");
+		address.setCountry("Ireland");
+		
+		addressBook.setAddressBookId(1234L);
 		addressBook.setFirstName("John");
 		addressBook.setLastName("Doe");
 		addressBook.setEmailAddress("john.doe@test.com");
-		addressBook.setAddress("London");
+		addressBook.setAddress(address);
 		addressBook.setPhoneNumber("089654739");
 		
 		addressBooks = new ArrayList<>();
@@ -64,7 +75,7 @@ public class AddressBookControllerTest {
 	@Test
 	public void testGetAllAddressDetails() throws Exception {
 		when(addressBookService.getAddressDetails()).thenReturn(addressBooks);
-		mockMvc.perform(MockMvcRequestBuilders.get("/addressbooks").
+		mockMvc.perform(MockMvcRequestBuilders.get("/addressbook").
 				accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 		.andDo(print());
 	}
@@ -78,7 +89,14 @@ public class AddressBookControllerTest {
 		addressBookRequest.setFirstName("John");
 		addressBookRequest.setLastName("Doe");
 		addressBookRequest.setEmailAddress("john.doe@test.com");
-		addressBookRequest.setAddress("London");
+		
+		Address address = new Address();
+		address.setAddressLine1("test line 1");
+		address.setAddressLine2("test line 2");
+		address.setCity("Dublin");
+		address.setCountry("Ireland");
+		
+		addressBookRequest.setAddress(address);
 		addressBookRequest.setPhoneNumber("089654739");
 		
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -95,7 +113,15 @@ public class AddressBookControllerTest {
 		addressBookRequest.setFirstName("John");
 		addressBookRequest.setLastName("Doe");
 		addressBookRequest.setEmailAddress("john.doe@test.com");
-		addressBookRequest.setAddress("London");
+		
+		Address address = new Address();
+		address.setAddressLine1("test line 1");
+		address.setAddressLine2("test line 2");
+		address.setCity("Dublin");
+		address.setCountry("Ireland");
+		
+		addressBookRequest.setAddress(address);
+		
 		addressBookRequest.setPhoneNumber("089654739");
 		
 		ObjectMapper objectMapper = new ObjectMapper();

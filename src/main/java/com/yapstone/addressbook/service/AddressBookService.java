@@ -3,6 +3,8 @@ package com.yapstone.addressbook.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,23 +19,45 @@ import lombok.Setter;
 @Setter 
 public class AddressBookService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AddressBookService.class);
+	
 	@Autowired
 	private AddressBookRepository addressBookRepository;
 	
 	public List<AddressBook> getAddressDetails() {
+		LOGGER.info("Inside the getAddressDetails");
 		List<AddressBook> addressBooks = new ArrayList<>();
 		addressBookRepository.findAll().forEach(addressBooks :: add);
+		LOGGER.info("AddressBooks fetched from backend {}", addressBooks.size());
 		return addressBooks;
 	}
 	
 	public AddressBook createAddressDetails(AddressBook addressBook) {
+		LOGGER.info("Inside the createAddressDetails");
 		return addressBookRepository.save(addressBook);
 	}
 	
-	public AddressBook updateAddressDetails(AddressBook addressBook, Long addressId) {
-		AddressBook addressBookToUpdate =getAddressDetailsById(addressId);
+	public AddressBook updateAddressDetails(AddressBook addressBook, Long addressBookId) {
+		LOGGER.info("Updating details for addressBookId {}", addressBookId);
+		AddressBook addressBookToUpdate =getAddressDetailsById(addressBookId);
+		
 		if(addressBook.getAddress()!=null) {
-			addressBookToUpdate.setAddress(addressBook.getAddress());
+			LOGGER.info("Updating Address details for addressId {}", addressBook.getAddress().getAddressId());
+			if(addressBook.getAddress().getAddressLine1()!=null) {
+				addressBookToUpdate.getAddress().setAddressLine1(addressBook.getAddress().getAddressLine1());
+			}
+			
+			if(addressBook.getAddress().getAddressLine2() != null) {
+				addressBookToUpdate.getAddress().setAddressLine2(addressBook.getAddress().getAddressLine2());
+			}
+			
+			if(addressBook.getAddress().getCity() != null) {
+				addressBookToUpdate.getAddress().setCity(addressBook.getAddress().getCity());
+			}
+			
+			if(addressBook.getAddress().getCountry() != null) {
+				addressBookToUpdate.getAddress().setCountry(addressBook.getAddress().getCountry());
+			}
 		}
 		
 		if(addressBook.getEmailAddress()!=null) {
@@ -54,12 +78,14 @@ public class AddressBookService {
 		return addressBookRepository.save(addressBookToUpdate);
 	}
 	
-	public void deleteAddressDetails(Long addressId) {
-		addressBookRepository.deleteById(addressId);
+	public void deleteAddressDetails(Long addressBookId) {
+		LOGGER.info("Deleting details for addressBookId {}", addressBookId);
+		addressBookRepository.deleteById(addressBookId);
 	}
 	
-	public AddressBook getAddressDetailsById(Long addressId) {
-		return addressBookRepository.findAddressBookByAddressId(addressId);
+	public AddressBook getAddressDetailsById(Long addressBookId) {
+		LOGGER.info("Getting details for addressBookId {}", addressBookId);
+		return addressBookRepository.findAddressBookByAddressBookId(addressBookId);
 	}
 	
 }

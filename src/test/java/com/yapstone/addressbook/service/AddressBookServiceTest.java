@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.yapstone.addressbook.model.Address;
 import com.yapstone.addressbook.model.AddressBook;
 import com.yapstone.addressbook.repository.AddressBookRepository;
 
@@ -30,21 +31,31 @@ public class AddressBookServiceTest {
 	@Mock
 	private AddressBookRepository addressBookRepository;
 	
-	List<AddressBook> addressBooks;
+	private List<AddressBook> addressBooks;
 	
-	AddressBook addressBook;
+	private AddressBook addressBook;
+	
+	private Address address;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		addressBookService.setAddressBookRepository(addressBookRepository);
 		
+		address = new Address();
+		
+		address.setAddressId(1L);
+		address.setAddressLine1("Wall Street");
+		address.setAddressLine2("New Avenue");
+		address.setCity("Dublin");
+		address.setCountry("Ireland");
+		
 		addressBook = new AddressBook();
-		addressBook.setAddressId(1234L);
+		addressBook.setAddressBookId(1234L);
 		addressBook.setFirstName("John");
 		addressBook.setLastName("Doe");
 		addressBook.setEmailAddress("john.doe@test.com");
-		addressBook.setAddress("London");
+		addressBook.setAddress(address);
 		addressBook.setPhoneNumber("089654739");
 		
 		addressBooks = new ArrayList<>();
@@ -71,10 +82,17 @@ public class AddressBookServiceTest {
 	@Test
 	public void testUpdateAddressDetails() {
 		Mockito.when(addressBookRepository.save(Mockito.any())).thenReturn(addressBook);
-		Mockito.when(addressBookRepository.findAddressBookByAddressId(Mockito.anyLong())).thenReturn(addressBook);
-		addressBook.setAddress("Dublin");
+		Mockito.when(addressBookRepository.findAddressBookByAddressBookId(Mockito.anyLong())).thenReturn(addressBook);
+		
+		
+		address.setAddressLine1("Wall Street1234");
+		address.setAddressLine2("New Avenue12321");
+		address.setCity("Dublin");
+		address.setCountry("Ireland");
+		
+		addressBook.setAddress(address);
 		AddressBook addressBookResponse = addressBookService.updateAddressDetails(addressBook, 1L);
-		assertEquals("Dublin", addressBookResponse.getAddress());
+		assertEquals("Wall Street1234", addressBookResponse.getAddress().getAddressLine1());
 	}
 	
 	@Test
@@ -86,7 +104,7 @@ public class AddressBookServiceTest {
 	
 	@Test
 	public void testGetAddressDetailsById() {
-		Mockito.when(addressBookRepository.findAddressBookByAddressId(Mockito.any(Long.class))).thenReturn(addressBook);
+		Mockito.when(addressBookRepository.findAddressBookByAddressBookId(Mockito.any(Long.class))).thenReturn(addressBook);
 		AddressBook addressBookResponse = addressBookService.getAddressDetailsById(1234L);
 		assertEquals("John",addressBookResponse.getFirstName());
 	}

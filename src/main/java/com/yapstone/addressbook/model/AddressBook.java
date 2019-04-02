@@ -2,13 +2,17 @@ package com.yapstone.addressbook.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
+import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
 import lombok.Getter;
@@ -25,8 +29,8 @@ public class AddressBook implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="ADDRESS_ID")
-	private Long addressId;
+	@Column(name="ADDRESSBOOK_ID")
+	private Long addressBookId;
 	
 	@Column(name="FIRST_NAME")
 	private String firstName;
@@ -37,8 +41,9 @@ public class AddressBook implements Serializable{
 	@Column(name="PHONE_NUMBER")
 	private String phoneNumber;
 	
-	@Column(name="ADDRESS")
-	private String address;
+	@OneToOne(fetch=FetchType.EAGER, orphanRemoval=false, cascade= {CascadeType.ALL})
+	@JoinColumn(name ="ADDRESS_ID", nullable=false)
+	private Address address;
 	
 	@Column(name="EMAIL_ADDRESS")
 	private String emailAddress;
